@@ -1,9 +1,11 @@
 using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
+using Unity.Mathematics;
 
 public class PlayerMovement : MonoBehaviour
 {
+#region Variables
     public static PlayerMovement instance;
 
     private Rigidbody2D rb;
@@ -14,10 +16,13 @@ public class PlayerMovement : MonoBehaviour
     private InputAction moveAction;
     private InputAction jumpAction;
 
+
     [Header("Speed")]
     public float maxSpeed = 20f;
     public float groundAcceleration = 40f;
+    public float groundTurningAcceleration = 60f;
     public float airAcceleration = 30f;
+    public float airTurningAcceleration = 40f;
     public float groundDeceleration = 20f;
     public float airDeceleration = 15f;
 
@@ -29,9 +34,14 @@ public class PlayerMovement : MonoBehaviour
     public float jumpBufferTime = 0.1f;
 
     private float lastPressedJumpTime;
+
     private float lastOnGroundTime;
+    private float lastOnWallTime;
+    private float lastOnRightWallTime;
+    private float lastOnLeftWallTime;
 
     private bool isJumping;
+    private bool isWallJumping;
 
     [Header("Gravity")]
     public float normalGravityScale = 1f;
@@ -47,7 +57,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Masks")]
     public LayerMask groundMask;
     public LayerMask wallJumpMask;
-    
+#endregion
+
+#region Start & Awake
     void Awake()
     {
         instance = this;
@@ -62,18 +74,34 @@ public class PlayerMovement : MonoBehaviour
     {
         SetGravity(normalGravityScale);
     }
+#endregion
 
     void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
 
-        lastOnGroundTime -= Time.deltaTime;
-        lastPressedJumpTime -= Time.deltaTime;
-
         if (jumpAction.WasPressedThisFrame())
         {
             lastPressedJumpTime = jumpBufferTime;
         }
+
+        HandleTimers();
+        HandleJumpingStuff();
+        Debugging();
+    }
+
+    void FixedUpdate()
+    {
+        HandleMovement();
+    }
+
+    void HandleTimers()
+    {
+        lastOnGroundTime -= Time.deltaTime;
+        lastPressedJumpTime -= Time.deltaTime;
+        lastOnLeftWallTime -= Time.deltaTime;
+        lastOnRightWallTime -= Time.deltaTime;
+        lastOnWallTime -= Time.deltaTime;
 
         if (!isJumping)
         {
@@ -83,66 +111,112 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (CanJump() && lastPressedJumpTime > 0)
+        if (IsTouchingRightWall())
         {
-            Jump();
+            lastOnRightWallTime = coyoteTimeAmount;
+        }
+
+        if (IsTouchingLeftWall())
+        {
+            lastOnLeftWallTime = coyoteTimeAmount;
+        }
+
+        lastOnWallTime = Mathf.Max(lastOnLeftWallTime, lastOnRightWallTime);
+    }
+
+    void HandleJumpingStuff()
+    {
+        #region Checking If Can Jump
+        if (lastPressedJumpTime > 0)
+        {
+            if (CanJump())
+            {
+                Jump();
+            }
+            else if (CanWallJumpLeft())
+            {
+                WallJump(false);
+            }
+            else if (CanWallJumpRight())
+            {
+                WallJump(true);
+            }
         }
 
         if (isJumping && rb.linearVelocity.y < 0)
         {
             isJumping = false;
         }
+        #endregion
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        #region Jump Gravity Stuff
+
+        if (jumpAction.WasReleasedThisFrame())
         {
             if (CanJumpCut())
             {
                 rb.linearVelocityY *= jumpCutMultiplier;
                 isJumping = false;
             }
-        } else if (rb.linearVelocity.y < 0)
+        }
+        else if (rb.linearVelocity.y < 0)
         {
             SetGravity(fallingGravityScale);
-        } else
+        }
+        else
         {
             SetGravity(normalGravityScale);
         }
-
-        RayCastDebug();
-
-    }
-
-    void FixedUpdate()
-    {
-        HandleMovement();
+        #endregion
     }
 
     void HandleMovement()
     {
         //Checks if input is negative or positive to go left or right
+        float currentSpeed = rb.linearVelocity.x;
         float targetSpeed = moveInput.x * maxSpeed;
+
+        bool isTurning = MathF.Sign(currentSpeed) != MathF.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01;
 
         float accelRate;
 
         if (lastOnGroundTime > 0)
         {
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01) ? groundAcceleration : groundDeceleration;
+            if (Mathf.Abs(targetSpeed) > 0.01)
+            {
+                accelRate = isTurning ? groundTurningAcceleration : groundAcceleration;
+            } else
+            {
+                accelRate = groundDeceleration;
+            }
         } else
         {
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01) ? airAcceleration : airDeceleration;
+            if (Mathf.Abs(targetSpeed) > 0.01)
+            {
+                accelRate = isTurning ? airTurningAcceleration : airAcceleration;
+            }
+            else
+            {
+                accelRate = airDeceleration;
+            }
         }
 
-        float finalSpeed = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, accelRate * Time.fixedDeltaTime);
+        float finalSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelRate * Time.fixedDeltaTime);
+
+        if (Mathf.Abs(finalSpeed) < 0.001)
+        {
+            finalSpeed = 0f;
+        }
 
         rb.linearVelocityX = finalSpeed;
     }
-
 
     void SetGravity(float amount)
     {
         rb.gravityScale = amount;
     }
 
+    #region Jumps
     void Jump()
     {
         isJumping = true;
@@ -151,24 +225,34 @@ public class PlayerMovement : MonoBehaviour
         lastPressedJumpTime = 0;
 
         rb.linearVelocityY = jumpForce;
-        isJumping = true;
-
-        /*
-        else if (CanWallJumpLeft())
-        {
-            rb.linearVelocity = new Vector2(-wallJumpHorizontalForce, wallJumpVerticalForce);
-            isJumping = true;
-        }
-        else if (CanWallJumpRight())
-        {
-            rb.linearVelocity = new Vector2(wallJumpHorizontalForce, wallJumpVerticalForce);
-            isJumping = true;
-        }
-        */
     }
 
+    void WallJump(bool isJumpingRight) //True: Right Jump, False: Left Jump
+    {
+        isJumping = true;
 
-    #region Bool functions
+        lastOnGroundTime = 0;
+        lastPressedJumpTime = 0;
+
+        lastOnLeftWallTime = 0;
+        lastOnRightWallTime = 0;
+        lastOnWallTime = 0;
+
+        //Wall Jump To The Left
+        if (isJumpingRight == false)
+        {
+            rb.linearVelocity = new Vector2(-wallJumpHorizontalForce, wallJumpVerticalForce);
+        }
+        //Wall Jump To The Right
+        if (isJumpingRight == true)
+        {
+            rb.linearVelocity = new Vector2(wallJumpHorizontalForce, wallJumpVerticalForce);
+        }
+    }
+    #endregion
+
+    #region Grounded & Wall Check Bools
+
     private bool IsGrounded()
     {
         float[] horizontalOffsets = { -groundCheckOffset, 0f, groundCheckOffset };
@@ -191,17 +275,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    private bool CanJump()
-    {
-        return lastOnGroundTime > 0 && !isJumping;
-    }
-
-    private bool CanJumpCut()
-    {
-        return isJumping && rb.linearVelocity.y > 0;
-    }
-
-    bool CanWallJumpLeft()
+    bool IsTouchingRightWall()
     {
         float[] verticalOffsets = { -wallCheckOffset, 0f, wallCheckOffset };
 
@@ -214,27 +288,58 @@ public class PlayerMovement : MonoBehaviour
                 sideRayDistance,
                 wallJumpMask))
             {
-                if (!IsGrounded())
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
     }
 
-    bool CanWallJumpRight()
+    bool IsTouchingLeftWall()
     {
-        //Checks a raycast to the left of the player
-        if (Physics2D.Raycast(transform.position, Vector2.left, sideRayDistance, wallJumpMask))
+        float[] verticalOffsets = { -wallCheckOffset, 0f, wallCheckOffset };
+
+        foreach (float offset in verticalOffsets)
         {
-            return true;
+            //Checks a raycast to the right of the player
+            if (Physics2D.Raycast(
+                new Vector2(transform.position.x, transform.position.y + offset),
+                Vector2.left,
+                sideRayDistance,
+                wallJumpMask))
+            {
+               return true;
+            }
         }
         return false;
     }
+
     #endregion
 
-    void RayCastDebug()
+    #region Can Jump Bools
+
+    private bool CanJump()
+    {
+        return lastOnGroundTime > 0 && !isJumping;
+    }
+
+    private bool CanJumpCut()
+    {
+        return isJumping && rb.linearVelocity.y > 0;
+    }
+
+    bool CanWallJumpLeft()
+    {
+        return lastOnRightWallTime > 0 && lastOnGroundTime <= 0;
+    }
+
+    bool CanWallJumpRight()
+    {
+        return lastOnLeftWallTime > 0 && lastOnGroundTime <= 0;
+    }
+
+    #endregion
+
+    void Debugging()
     {
         //Ground Check Rays
         Debug.DrawRay(new Vector2(transform.position.x - groundCheckOffset, transform.position.y), Vector2.down * groundCheckDistance, Color.red);
@@ -245,9 +350,11 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(transform.position, Vector2.right * sideRayDistance, Color.blue);
         Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + wallCheckOffset), Vector2.right * sideRayDistance, Color.blue);
         //Right wall jump rays
+        Debug.DrawRay(new Vector2(transform.position.x, transform.position.y - wallCheckOffset), Vector2.left * sideRayDistance, Color.green);
         Debug.DrawRay(transform.position, Vector2.left * sideRayDistance, Color.green);
+        Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + wallCheckOffset), Vector2.left * sideRayDistance, Color.green);
 
-        Debug.Log(CanWallJumpLeft());
+        //Debug.Log(IsTouchingRightWall());
         //Debug.Log("Gravity Scale: " + rb.gravityScale);
         //Debug.Log("Horizontal Velocity: " + rb.linearVelocity.x);
         //Debug.Log("Vertical Velocity: " + rb.linearVelocity.y);
