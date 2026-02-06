@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 using Unity.Mathematics;
+using NUnit.Framework;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction slamAction;
 
 
     [Header("Speed")]
@@ -25,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public float airTurningAcceleration = 40f;
     public float groundDeceleration = 20f;
     public float airDeceleration = 15f;
+    private bool isFacingRight;
 
     [Header("Jump")]
     public float jumpForce = 6f;
@@ -39,14 +42,21 @@ public class PlayerMovement : MonoBehaviour
     private float lastOnWallTime;
     private float lastOnRightWallTime;
     private float lastOnLeftWallTime;
+    private float lastInAirTime;
 
     private bool isJumping;
     private bool isWallJumping;
+
+    [Header("Ground Slam")]
+    private bool isSlamming = false;
+    public float groundSlamForce;
+    public Vector2 groundSlamJumpVelocity;
 
     [Header("Gravity")]
     public float normalGravityScale = 1f;
     public float fallingGravityScale = 3f;
     public float jumpCutMultiplier = 0.5f;
+    public float maxFallSpeed = -70f;
 
     [Header("Raycasts")]
     public float groundCheckOffset = 0.4f;
@@ -67,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
 
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
-
+        slamAction = InputSystem.actions.FindAction("Slam");
     }
 
     void Start()
@@ -87,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
 
         HandleTimers();
         HandleJumpingStuff();
+        HandleGroundSlam();
         Debugging();
     }
 
@@ -98,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
     void HandleTimers()
     {
         lastOnGroundTime -= Time.deltaTime;
+        lastInAirTime -= Time.deltaTime;
         lastPressedJumpTime -= Time.deltaTime;
         lastOnLeftWallTime -= Time.deltaTime;
         lastOnRightWallTime -= Time.deltaTime;
@@ -109,6 +121,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 lastOnGroundTime = coyoteTimeAmount;
             }
+        }
+
+        if (!IsGrounded())
+        {
+            lastInAirTime = coyoteTimeAmount;
         }
 
         if (IsTouchingRightWall())
@@ -131,7 +148,13 @@ public class PlayerMovement : MonoBehaviour
         {
             if (CanJump())
             {
-                Jump();
+                if (CanSlamJump())
+                {
+                    SlamJump();
+                } else
+                {
+                   Jump();
+                }
             }
             else if (CanWallJumpLeft())
             {
@@ -150,6 +173,8 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region Jump Gravity Stuff
+
+        rb.linearVelocityY = Mathf.Max(rb.linearVelocity.y, maxFallSpeed);
 
         if (jumpAction.WasReleasedThisFrame())
         {
@@ -170,11 +195,31 @@ public class PlayerMovement : MonoBehaviour
         #endregion
     }
 
+    void HandleGroundSlam()
+    {
+        if (slamAction.WasPressedThisFrame())
+        {
+            if (CanGroundSlam())
+            {
+                GroundSlam();
+            }
+        }
+    }
+
     void HandleMovement()
     {
         //Checks if input is negative or positive to go left or right
         float currentSpeed = rb.linearVelocity.x;
         float targetSpeed = moveInput.x * maxSpeed;
+
+
+        if (moveInput.x > 0.001)
+        {
+            isFacingRight = true;
+        } else if (moveInput.x < -0.001)
+        {
+            isFacingRight = false;
+        }
 
         bool isTurning = MathF.Sign(currentSpeed) != MathF.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01;
 
@@ -221,15 +266,32 @@ public class PlayerMovement : MonoBehaviour
     {
         isJumping = true;
 
+        
+        isSlamming = false;
+
         lastOnGroundTime = 0;
         lastPressedJumpTime = 0;
 
         rb.linearVelocityY = jumpForce;
     }
 
+    void SlamJump()
+    {
+        isJumping = true;
+
+        isSlamming = false;
+
+        lastOnGroundTime = 0;
+        lastPressedJumpTime = 0;
+
+        rb.linearVelocity = isFacingRight ? 
+        groundSlamJumpVelocity : new Vector2(-groundSlamJumpVelocity.x , groundSlamJumpVelocity.y);
+    }
+
     void WallJump(bool isJumpingRight) //True: Right Jump, False: Left Jump
     {
         isJumping = true;
+        isSlamming = false;
 
         lastOnGroundTime = 0;
         lastPressedJumpTime = 0;
@@ -249,6 +311,13 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(wallJumpHorizontalForce, wallJumpVerticalForce);
         }
     }
+
+    void GroundSlam()
+    {
+        isSlamming = true;
+        rb.linearVelocityY = groundSlamForce;
+    }
+
     #endregion
 
     #region Grounded & Wall Check Bools
@@ -329,12 +398,22 @@ public class PlayerMovement : MonoBehaviour
 
     bool CanWallJumpLeft()
     {
-        return lastOnRightWallTime > 0 && lastOnGroundTime <= 0;
+        return lastOnRightWallTime > 0 && lastOnGroundTime < 0;
     }
 
     bool CanWallJumpRight()
     {
-        return lastOnLeftWallTime > 0 && lastOnGroundTime <= 0;
+        return lastOnLeftWallTime > 0 && lastOnGroundTime < 0;
+    }
+
+    bool CanGroundSlam()
+    {
+        return lastOnGroundTime < 0 && !isSlamming;
+    }
+
+    bool CanSlamJump()
+    {
+        return lastInAirTime > 0 && isSlamming;
     }
 
     #endregion
@@ -358,7 +437,7 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log("Gravity Scale: " + rb.gravityScale);
         //Debug.Log("Horizontal Velocity: " + rb.linearVelocity.x);
         //Debug.Log("Vertical Velocity: " + rb.linearVelocity.y);
-
+        //Debug.Log("Time Since In Air" + lastInAirTime);
     }
 
 }

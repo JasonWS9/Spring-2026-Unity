@@ -440,9 +440,12 @@ MonoBehaviour:
   wallJumpVerticalForce: 10
   coyoteTimeAmount: 0.5
   jumpBufferTime: 0.2
+  groundSlamForce: -25
+  groundSlamJumpVelocity: {x: 30, y: 12}
   normalGravityScale: 2
   fallingGravityScale: 3
   jumpCutMultiplier: 0.5
+  maxFallSpeed: -70
   groundCheckOffset: 0.4
   wallCheckOffset: 0.6
   groundCheckDistance: 1.1
