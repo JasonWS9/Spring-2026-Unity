@@ -86,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
     }
 #endregion
 
+#region Update Functions
     void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
@@ -105,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleMovement();
     }
+#endregion
 
     void HandleTimers()
     {
@@ -143,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleJumpingStuff()
     {
-        #region Checking If Can Jump
+    #region Checking If Can Jump
         if (lastPressedJumpTime > 0)
         {
             if (CanJump())
@@ -170,10 +172,9 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping = false;
         }
-        #endregion
+    #endregion
 
-        #region Jump Gravity Stuff
-
+    #region Jump Gravity Stuff
         rb.linearVelocityY = Mathf.Max(rb.linearVelocity.y, maxFallSpeed);
 
         if (jumpAction.WasReleasedThisFrame())
@@ -192,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
         {
             SetGravity(normalGravityScale);
         }
-        #endregion
+    #endregion
     }
 
     void HandleGroundSlam()
@@ -261,7 +262,7 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = amount;
     }
 
-    #region Jumps
+#region Jump Functions
     void Jump()
     {
         isJumping = true;
@@ -318,9 +319,9 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocityY = groundSlamForce;
     }
 
-    #endregion
+#endregion
 
-    #region Grounded & Wall Check Bools
+#region Ground & Wall Checks
 
     private bool IsGrounded()
     {
@@ -382,9 +383,9 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    #endregion
+#endregion
 
-    #region Can Jump Bools
+#region Bool Functions
 
     private bool CanJump()
     {
@@ -416,7 +417,7 @@ public class PlayerMovement : MonoBehaviour
         return lastInAirTime > 0 && isSlamming;
     }
 
-    #endregion
+#endregion
 
     void Debugging()
     {
