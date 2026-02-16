@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   animator: {fileID: 5564988383326525917}
-  playerVisuals: {fileID: 6070909640632944483}
+  playerVisuals: {fileID: 1765992704031690157}
   maxSpeed: 25
   groundAcceleration: 20
   groundTurningAcceleration: 35
@@ -120,7 +120,7 @@ MonoBehaviour:
   airDeceleration: 15
   jumpForce: 16
   wallJumpHorizontalForce: 20
-  wallJumpVerticalForce: 10
+  wallJumpVerticalForce: 14
   coyoteTimeAmount: 0.15
   jumpBufferTime: 0.2
   groundSlamForce: -25
@@ -131,7 +131,7 @@ MonoBehaviour:
   maxFallSpeed: -70
   groundCheckOffset: 0.4
   wallCheckOffset: 0.6
-  groundCheckDistance: 1.4
+  groundCheckDistance: 0.9
   sideRayDistance: 0.55
   groundMask:
     serializedVersion: 2
@@ -200,7 +200,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.4}
+  m_Offset: {x: 0, y: 0.033470333}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -210,7 +210,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1.8}
+  m_Size: {x: 1, y: 1.708743}
   m_EdgeRadius: 0
 --- !u!114 &8426546708671978910
 MonoBehaviour:
@@ -274,7 +274,7 @@ Transform:
   m_GameObject: {fileID: 6070909640632944483}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.05, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

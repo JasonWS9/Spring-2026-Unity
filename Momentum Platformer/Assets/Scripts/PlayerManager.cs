@@ -5,13 +5,21 @@ public class PlayerManager : MonoBehaviour
 {
 
     private InputAction resetAction;
+    private InputAction enterAction;
+
+    private Rigidbody2D playerRb;
+
+    private bool isLevelCompleted = false;
 
     public Vector2 spawnPoint;
 
     void Start()
     {
+        playerRb = GetComponent<Rigidbody2D>();
         resetAction = InputSystem.actions.FindAction("Reset");
+        enterAction = InputSystem.actions.FindAction("Enter");
         spawnPoint = transform.position;
+        isLevelCompleted = false;
     }
 
     void Update()
@@ -20,6 +28,15 @@ public class PlayerManager : MonoBehaviour
         {
             SceneManagment.instance.ReloadCurrentScene();
         }
+
+        if (enterAction.WasPressedThisFrame())
+        {
+            if (isLevelCompleted)
+            {
+                SceneManagment.instance.LoadNextLevel();
+            }
+        }
+
     }
 
 #region Collisions
@@ -33,6 +50,7 @@ public class PlayerManager : MonoBehaviour
         if (collision.CompareTag("Goal"))
         {
             TimerManager.instance.CompleteLevel();
+            isLevelCompleted = true;
         }
 
         if (collision.CompareTag("Hazard"))
@@ -44,12 +62,14 @@ public class PlayerManager : MonoBehaviour
         {
             spawnPoint = collision.transform.position;
         }
+        
     }
 #endregion
 
     void PlayerDeath()
     {
         transform.position = spawnPoint;
+        playerRb.linearVelocity = new Vector2(0,0);
     }
 
 }

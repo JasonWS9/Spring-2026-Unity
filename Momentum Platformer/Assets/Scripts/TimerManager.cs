@@ -20,8 +20,18 @@ public class TimerManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI completionTimeText;
     public TextMeshProUGUI medalText;
-    public TextMeshProUGUI medalThresholdsText;
     public GameObject completionText;
+
+    public TextMeshProUGUI bronzeTimeText;
+    public TextMeshProUGUI silverTimeText;
+    public TextMeshProUGUI goldTimeText;
+
+    [Header("Colors")]
+    public Color goldColor;
+    public Color silverColor;
+    public Color bronzeColor;
+    public Color noMedalColor;
+
 
     void Awake()
     {
@@ -32,6 +42,15 @@ public class TimerManager : MonoBehaviour
     {
         completionText.SetActive(false);
         StartTimer();
+
+        bronzeTimeText.text = "Bronze Time: " + bronzeScoreTime;
+        bronzeTimeText.color = bronzeColor;
+
+        silverTimeText.text = "Silver Time: " + silverScoreTime;
+        silverTimeText.color = silverColor;
+
+        goldTimeText.text = "Gold Time: " + goldScoreTime;
+        goldTimeText.color = goldColor;
     }
 
     void Update()
@@ -69,17 +88,26 @@ public class TimerManager : MonoBehaviour
         {
             Debug.Log("Completed level: Gold medal recieved");
             recievedMedal = "Gold";
+            medalText.color = goldColor;
+            completionTimeText.color = goldColor;
         } else if (currentTime >= silverScoreTime)
         {
             Debug.Log("Completed level: Silver medal recieved");
             recievedMedal = "Silver";
+            medalText.color = silverColor;
+            completionTimeText.color = silverColor;
+
         } else if (currentTime >= bronzeScoreTime)
         {
             Debug.Log("Completed level: Bronze medal recieved");
             recievedMedal = "Bronze";
+            medalText.color = bronzeColor;
+            completionTimeText.color = bronzeColor;
         } else
         {
             Debug.Log("Completed level: No medal recieved");
+            medalText.color = noMedalColor;
+            completionTimeText.color = noMedalColor;
             recievedMedal = "None";
         }
 
