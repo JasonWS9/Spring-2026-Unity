@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (resetAction.WasPressedThisFrame())
         {
-            SceneManagment.instance.ReloadCurrentScene();
+            SceneManagment.instance.LoadScene("TitleScene");
         }
 
         if (enterAction.WasPressedThisFrame())
@@ -55,7 +55,7 @@ public class PlayerManager : MonoBehaviour
 
         if (collision.CompareTag("Hazard"))
         {
-            PlayerDeath();
+            //PlayerDeath();
         }
 
         if (collision.CompareTag("SpawnPoint"))

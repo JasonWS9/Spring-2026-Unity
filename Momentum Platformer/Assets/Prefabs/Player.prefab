@@ -127,7 +127,7 @@ MonoBehaviour:
   groundSlamJumpVelocity: {x: 30, y: 12}
   normalGravityScale: 2
   fallingGravityScale: 3
-  jumpCutMultiplier: 0.5
+  jumpCutMultiplier: 0.35
   maxFallSpeed: -70
   groundCheckOffset: 0.4
   wallCheckOffset: 0.6

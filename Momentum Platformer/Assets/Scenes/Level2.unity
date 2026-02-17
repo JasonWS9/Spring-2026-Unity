@@ -953,7 +953,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.952221, y: 6.3048806, z: -10}
+  m_LocalPosition: {x: 11.848021, y: 6.3048816, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1428,6 +1428,7 @@ MonoBehaviour:
   completionTimeText: {fileID: 529991503}
   medalText: {fileID: 1292803593}
   completionText: {fileID: 1056753856}
+  continueText: {fileID: 868982914}
   bronzeTimeText: {fileID: 327048517}
   silverTimeText: {fileID: 2004574582}
   goldTimeText: {fileID: 1803114090}
@@ -1435,6 +1436,7 @@ MonoBehaviour:
   silverColor: {r: 0.6037736, g: 0.5752937, b: 0.5752937, a: 1}
   bronzeColor: {r: 0.6037736, g: 0.38182387, b: 0.1537914, a: 1}
   noMedalColor: {r: 0.6320754, g: 0.3258336, b: 0.24448203, a: 1}
+  finalLevelName: Level3
 --- !u!4 &665321881
 Transform:
   m_ObjectHideFlags: 0
@@ -2220,7 +2222,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 21.505241}
+  m_Offset: {x: 0.04311282, y: 21.505241}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -2230,7 +2232,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 54.400726}
+  m_Size: {x: 0.14943469, y: 54.400726}
   m_EdgeRadius: 0
 --- !u!4 &1290896653
 Transform:

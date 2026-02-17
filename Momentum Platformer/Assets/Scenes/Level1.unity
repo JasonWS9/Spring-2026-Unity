@@ -529,6 +529,7 @@ MonoBehaviour:
   completionTimeText: {fileID: 2102711076}
   medalText: {fileID: 1658661034}
   completionText: {fileID: 757740947}
+  continueText: {fileID: 481048137}
   bronzeTimeText: {fileID: 1234359555}
   silverTimeText: {fileID: 2066308125}
   goldTimeText: {fileID: 1024771758}
@@ -536,6 +537,7 @@ MonoBehaviour:
   silverColor: {r: 0.5990566, g: 0.5990566, b: 0.5990566, a: 1}
   bronzeColor: {r: 0.4528302, g: 0.35161173, b: 0.21146315, a: 1}
   noMedalColor: {r: 0.3018868, g: 0.15806337, b: 0.15806337, a: 1}
+  finalLevelName: Level3
 --- !u!4 &665321881
 Transform:
   m_ObjectHideFlags: 0
@@ -1338,7 +1340,7 @@ GameObject:
   - component: {fileID: 1017074215}
   - component: {fileID: 1017074214}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3136,7 +3138,7 @@ Transform:
   m_GameObject: {fileID: 105079841933974279}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 11.159073, y: 6.35176, z: -10}
+  m_LocalPosition: {x: 11.150098, y: 6.35173, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

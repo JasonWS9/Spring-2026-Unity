@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TimerManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class TimerManager : MonoBehaviour
     public TextMeshProUGUI completionTimeText;
     public TextMeshProUGUI medalText;
     public GameObject completionText;
+    public TextMeshProUGUI continueText;
 
     public TextMeshProUGUI bronzeTimeText;
     public TextMeshProUGUI silverTimeText;
@@ -32,6 +34,7 @@ public class TimerManager : MonoBehaviour
     public Color bronzeColor;
     public Color noMedalColor;
 
+    public string finalLevelName = "Level3";
 
     void Awake()
     {
@@ -109,6 +112,14 @@ public class TimerManager : MonoBehaviour
             medalText.color = noMedalColor;
             completionTimeText.color = noMedalColor;
             recievedMedal = "None";
+        }
+
+        if (SceneManager.GetActiveScene().name == finalLevelName)
+        {
+            continueText.text = "All levels completed! Press Escape To Return To Title";
+        } else
+        {
+            continueText.text = "Press Enter To Continue";
         }
 
         completionText.SetActive(true);
