@@ -8,6 +8,8 @@ TagManager:
   - Killfloor
   - SpawnPoint
   - Hazard
+  - Diamond
+  - Interactable
   layers:
   - Default
   - TransparentFX

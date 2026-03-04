@@ -1,0 +1,16 @@
+﻿title: NPC_Rick
+---
+<<if $hasDiamond == true>>
+    Rick: Oh my god you found a Diamond!
+    Rick: I think you are so special!
+<<else>>
+Rick:Hello my name is Rick!
+Rick: Where are you from?
+    ->Texas
+    ->New Jersey
+    ->The Moon Man Colony?
+
+Rick: Oh wow that is very interesting! 
+Rick: I have never been there...
+<<endif>>
+===

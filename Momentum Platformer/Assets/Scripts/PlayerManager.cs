@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
 
     private InputAction resetAction;
     private InputAction enterAction;
+    private InputAction interactAction;
 
     private Rigidbody2D playerRb;
 
@@ -13,13 +14,27 @@ public class PlayerManager : MonoBehaviour
 
     public Vector2 spawnPoint;
 
+    private bool canInteract;
+
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
         resetAction = InputSystem.actions.FindAction("Reset");
         enterAction = InputSystem.actions.FindAction("Enter");
+        interactAction = InputSystem.actions.FindAction("Interact");
         spawnPoint = transform.position;
         isLevelCompleted = false;
+    }
+
+    private void OnEnable()
+    {
+        DialogManager.DialogStart += OnDialogStart;
+        DialogManager.DialogOver += OnDialogOver;
+    }
+    private void OnDisable()
+    {
+        DialogManager.DialogStart -= OnDialogStart;
+        DialogManager.DialogOver -= OnDialogOver;
     }
 
     void Update()
@@ -35,6 +50,12 @@ public class PlayerManager : MonoBehaviour
             {
                 SceneManagment.instance.LoadNextLevel();
             }
+        }
+
+        if (interactAction.IsPressed())
+        {
+            print("IIII");
+            DialogManager.instance.StartDialog();
         }
 
     }
@@ -62,6 +83,12 @@ public class PlayerManager : MonoBehaviour
         {
             spawnPoint = collision.transform.position;
         }
+    
+        if (collision.gameObject.tag == "Diamond")
+        {
+            Destroy(collision.gameObject);
+            DialogManager.instance.GotDiamond();
+        }
         
     }
 #endregion
@@ -71,5 +98,16 @@ public class PlayerManager : MonoBehaviour
         transform.position = spawnPoint;
         playerRb.linearVelocity = new Vector2(0,0);
     }
+
+#region Dialogue
+    private void OnDialogStart()
+    {
+
+    }
+    private void OnDialogOver()
+    {
+        
+    }
+#endregion
 
 }

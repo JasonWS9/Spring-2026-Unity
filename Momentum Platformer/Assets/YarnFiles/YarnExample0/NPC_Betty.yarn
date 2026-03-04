@@ -1,0 +1,27 @@
+title: NPC_Betty
+---
+<<if $hasDiamond>>
+    <<jump Diamond>>
+<<elseif visited("Intro")>>
+    <<jump WelcomeBack>>
+<<else>>
+    <<jump Intro>>
+<<endif>>
+===
+
+title: Intro
+---
+    Betty: Lovely to meet you!
+    Betty: Now leave me alone please!
+===
+
+title: WelcomeBack
+---
+    Betty: You don't listen do you?
+===
+
+title: Diamond
+---
+    Betty: You are a diamond thief!
+    Betty: I will kill you!
+===
