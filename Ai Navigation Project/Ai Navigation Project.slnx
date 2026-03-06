@@ -1,4 +1,7 @@
 ﻿<Solution>
+  <Project Path="Unity.CastVisualizer.Editor.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Unity.CastVisualizer.Runtime.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Unity.CastVisualizer.Samples.SampleScenes.csproj" />
 </Solution>

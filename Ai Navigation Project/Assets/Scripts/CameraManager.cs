@@ -24,7 +24,7 @@ public class CameraManager : MonoBehaviour
         float moveX = moveinput.x;
         float moveY = moveinput.y;
 
-        orbit.HorizontalAxis.Value -= moveX * cameraRotationSpeed * Time.deltaTime;
+        orbit.HorizontalAxis.Value += moveX * cameraRotationSpeed * Time.deltaTime;
 
         if (orbit.HorizontalAxis.Value >= 360 || orbit.HorizontalAxis.Value <= -360)
         {
