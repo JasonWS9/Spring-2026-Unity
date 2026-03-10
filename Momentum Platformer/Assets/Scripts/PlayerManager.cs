@@ -52,9 +52,8 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        if (interactAction.IsPressed())
+        if (interactAction.WasPressedThisFrame())
         {
-            print("IIII");
             DialogManager.instance.StartDialog();
         }
 

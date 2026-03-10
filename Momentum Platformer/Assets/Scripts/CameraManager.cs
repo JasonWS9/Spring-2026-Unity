@@ -21,8 +21,7 @@ public class CameraManager : MonoBehaviour
     public float minSpeed; //Minimum player speed for zoomout to start
     public float maxSpeed; //Player speed where the camera reaches max zoom
     private float playerSpeed;
-    public float horizontalSpeedZoomMult;
-    public float verticalSpeedZoomMult;
+    //public float horizontalSpeedZoomMult;
 
     void Start()
     {
@@ -35,7 +34,7 @@ public class CameraManager : MonoBehaviour
 
     void LateUpdate()
     {
-        float playerSpeed = playerRB.linearVelocity.magnitude;
+        float playerSpeed = playerRB.linearVelocity.x;
 
         // Converts the speed into a zoom value: 0 = minSpeed & 1 = maxSpeed
         //EX: If minSpeed = 10 & maxSpeed = 20, if playerSpeed is 15 it returns 0.5

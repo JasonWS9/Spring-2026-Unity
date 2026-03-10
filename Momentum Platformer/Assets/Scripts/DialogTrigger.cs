@@ -12,6 +12,7 @@ public class DialogTrigger : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             DialogManager.instance.LoadDialog(this);
+            Debug.Log(this);
         }
     }
 

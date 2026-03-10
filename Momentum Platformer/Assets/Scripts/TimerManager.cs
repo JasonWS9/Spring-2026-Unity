@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Yarn.Unity;
 
 public class TimerManager : MonoBehaviour
 {
@@ -36,9 +37,12 @@ public class TimerManager : MonoBehaviour
 
     public string finalLevelName = "Level3";
 
+    public InMemoryVariableStorage variableStorage;
+
     void Awake()
     {
         instance = this;
+        variableStorage = GameObject.FindAnyObjectByType<InMemoryVariableStorage>();
     }
 
     void Start()
@@ -70,6 +74,15 @@ public class TimerManager : MonoBehaviour
             PauseTimer();
             SceneManagment.instance.ReloadCurrentScene();
         }
+
+        if (currentTime <= 10)
+        {
+            variableStorage.SetValue("$lowOnTime", true);
+        } else
+        {
+            variableStorage.SetValue("$lowOnTime", false);
+        }
+
     }
 
     public void StartTimer()

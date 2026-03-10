@@ -1,0 +1,27 @@
+﻿
+title: NPC_Red
+---
+<<declare $lowOnTime = false>>
+
+<<if $lowOnTime>>
+    <<jump LowOnTime>>
+<<elseif visited("RedIntro")>>
+    <<jump RedWelcomeBack>>
+<<else>>
+    <<jump RedIntro>>
+<<endif>>
+===
+
+title: RedIntro
+---
+    Red: Welcome to the game, press space to jump and WASD to move
+===
+title: RedWelcomeBack
+---
+    Red: You can also press shift to slam to the ground!
+    Red: You only have a certain amount of time to complete the level!
+===
+title: LowOnTime
+---
+    Red: Hurry up, you are almost out of time!
+===

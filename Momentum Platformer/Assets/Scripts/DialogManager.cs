@@ -15,32 +15,40 @@ public class DialogManager : MonoBehaviour
     public bool dialogReady, dialogStarted;
     public bool hasDiamond = false;
 
+    public int timeLeft = 10;
+
     void Awake()
     {
         if (instance == null)
             instance = this;
     }
 
+    void Update()
+    {
+        
+    }
+
     public void LoadDialog(DialogTrigger dTrigger)
     {
-
+        Debug.Log(dTrigger);
         //Set the start node for the dialog runner
         dialogueRunner.startNode = dTrigger.startNode;
         //Put the portrait in the dialog box
-
+        Debug.Log(dTrigger.startNode);
         //the dialog is read to view
         dialogReady = true;
     }
 
     public void StartDialog()
     {
-        if (dialogReady && !dialogStarted)
+        Debug.Log("Dialogue Ready: " + dialogReady + " dialogueStarted: " + dialogueRunner.IsDialogueRunning);
+        if (dialogReady && !dialogueRunner.IsDialogueRunning)
         {
 
             // just to be careful make sure the runner is stopped
             dialogueRunner.Stop();
 
-            dialogueRunner.StartDialogue(dialogueRunner.startNode);
+            dialogueRunner.StartDialogue("NPC_Red");
             if (DialogStart != null)
                 DialogStart();
 
@@ -51,16 +59,15 @@ public class DialogManager : MonoBehaviour
     {
         if (DialogStart != null)
             DialogOver();
-
         dialogStarted = false;
 
     }
-
     public void GotDiamond()
     {
         //Set the Diamond variable in Yarnspinner
         hasDiamond = true;
         dialogueRunner.VariableStorage.SetValue("$hasDiamond", true);
     }
+
 
 }
