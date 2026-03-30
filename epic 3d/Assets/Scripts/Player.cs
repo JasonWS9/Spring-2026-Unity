@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,13 @@ public class Player : MonoBehaviour
     public float speed; 
 
     private Vector3 startPos;
+
+    public float speedBoostTime;
+    public float speedBoostMult;
+
+    private bool isBoosted;
+
+    public float jumpForce;
 
     void Start()
     {
@@ -48,5 +56,27 @@ public class Player : MonoBehaviour
             Debug.Log("ow");
             transform.position = startPos;
         }
+        if (other.CompareTag("Boost"))
+        {
+            if (!isBoosted)
+            {
+                Debug.Log("boost");
+                //StartCoroutine(SpeedBoost());
+                rb.AddForce(0, jumpForce, 0);
+            }
+ 
+        }
+    }
+
+    IEnumerator SpeedBoost()
+    {
+        isBoosted = true;
+        float originalSpeed = speed;
+        speed *= speedBoostMult;
+        Debug.Log(speed);
+        yield return new WaitForSeconds(speedBoostTime);
+        speed = originalSpeed;
+        isBoosted = false;
+        Debug.Log(speed);
     }
 }
