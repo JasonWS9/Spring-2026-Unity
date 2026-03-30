@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("move");
         startPos = transform.position;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update()
