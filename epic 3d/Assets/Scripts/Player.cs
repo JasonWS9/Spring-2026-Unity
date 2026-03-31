@@ -21,12 +21,15 @@ public class Player : MonoBehaviour
 
     public float jumpForce;
 
+    public GameObject W;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("move");
         startPos = transform.position;
         Cursor.lockState = CursorLockMode.Confined;
+        W.SetActive(false);
     }
 
     void Update()
@@ -50,6 +53,7 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Goal")) 
         {
             Debug.Log("goal");
+            W.SetActive(true);
         }
 
         if (other.CompareTag("Hazard")) 
@@ -59,13 +63,9 @@ public class Player : MonoBehaviour
         }
         if (other.CompareTag("Boost"))
         {
-            if (!isBoosted)
-            {
-                Debug.Log("boost");
-                //StartCoroutine(SpeedBoost());
-                rb.AddForce(0, jumpForce, 0);
-            }
- 
+            Debug.Log("boost");
+            //StartCoroutine(SpeedBoost());
+            rb.AddForce(0, jumpForce, 0);
         }
     }
 
